@@ -15,21 +15,29 @@ func main() {
 	}
 
 	var res []string
+	positions := map[string]int{}
 	for i := 1; i <= N; i++ {
-		res = append(res, strconv.Itoa(i))
+		num := strconv.Itoa(i)
+		res = append(res, num)
+		positions[num] = i - 1
 	}
 
 	for _, X := range Xs {
-		for i, r := range res {
-			if r == X {
-				if i == len(res)-1 {
-					res[i], res[i-1] = res[i-1], res[i]
-					break
-				} else {
-					res[i], res[i+1] = res[i+1], res[i]
-					break
-				}
+		if pos, ok := positions[X]; ok {
+			var nextXPos, nextYPos int
+			var Y string
+			if pos == len(res)-1 {
+				nextXPos = pos
+				nextYPos = pos - 1
+				Y = res[pos]
+			} else {
+				nextXPos = pos + 1
+				nextYPos = pos
+				Y = res[pos+1]
 			}
+			res[nextXPos], res[nextYPos] = res[nextYPos], res[nextXPos]
+			positions[X] = nextXPos
+			positions[Y] = nextYPos
 		}
 	}
 
