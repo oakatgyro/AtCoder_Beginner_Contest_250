@@ -5,18 +5,38 @@ import (
 	"math"
 )
 
-func isPrimeNumber(num int) bool {
-	var isPrime bool
-	if num == 0 || num == 1 {
-		return isPrime
+var maxP = int(math.Pow10(6))
+
+func reverse(s []int) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
 	}
-	for i := 2; i <= num/2; i++ {
-		if num%i == 0 {
-			return isPrime
+}
+
+func makePrimeList() []int {
+	all := make([]bool, maxP)
+	primeList := []int{}
+	for i := 2; i < maxP; i++ {
+		if all[i] == true {
+			continue
+		}
+
+		primeList = append(primeList, i)
+
+		for j := i; j < maxP; j += i {
+			all[j] = true
 		}
 	}
-	isPrime = true
-	return isPrime
+	// reverse(primeList)
+	return primeList
+}
+
+func makeValue(p, q int) int {
+	v := int(float64(p) * math.Pow(float64(q), 3))
+	if v > 4e18 {
+		return 4e18
+	}
+	return v
 }
 
 func main() {
@@ -24,21 +44,19 @@ func main() {
 	fmt.Scan(&N)
 	var count int
 
-	elem := N / 2
-	loop := int(math.Cbrt(float64(elem)))
+	primeList := makePrimeList()
+	size := len(primeList)
+	q := size - 1
 
-	for i := 1; i <= loop; i++ {
-		if !isPrimeNumber(i) {
-			continue
+	for p := 0; p < size; p++ {
+		for p < q && makeValue(primeList[p], primeList[q]) > N {
+			q--
 		}
-		for j := i + 1; j <= loop; j++ {
-			if !isPrimeNumber(j) {
-				continue
-			}
-			if i*int(math.Pow(float64(j), 3)) <= N {
-				count++
-			}
+		if p >= q {
+			break
 		}
+		count += q - p
 	}
+
 	fmt.Println(count)
 }
